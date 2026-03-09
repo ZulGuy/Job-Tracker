@@ -1,9 +1,13 @@
 package com.studying.jobtracker.entities;
 
+import jakarta.validation.Valid;
+
 public class Note {
 
   private int id;
   private String content;
+
+  @Valid
   private User user;
 
   public Note(int id, String content, User user) {
