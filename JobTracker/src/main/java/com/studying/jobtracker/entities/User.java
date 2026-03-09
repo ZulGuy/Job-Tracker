@@ -2,6 +2,7 @@ package com.studying.jobtracker.entities;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Positive;
+import java.util.List;
 
 public class User {
 
@@ -15,6 +16,7 @@ public class User {
   @Email
   private String email;
   private String socials;
+  private List<Vacancy> vacancies;
 
   public User(int id, String name, String description, String experience, String skills,
       String number, String email, String socials) {
@@ -26,6 +28,19 @@ public class User {
     this.number = number;
     this.email = email;
     this.socials = socials;
+  }
+
+  public User(int id, String name, String description, String experience, String skills,
+      String number, String email, String socials, List<Vacancy> vacancies) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.experience = experience;
+    this.skills = skills;
+    this.number = number;
+    this.email = email;
+    this.socials = socials;
+    this.vacancies = vacancies;
   }
 
   public User() {
@@ -93,5 +108,13 @@ public class User {
 
   public void setSocials(String socials) {
     this.socials = socials;
+  }
+
+  public List<Vacancy> getVacancies() {
+    return vacancies;
+  }
+
+  public void setVacancies(List<Vacancy> vacancies) {
+    this.vacancies = vacancies;
   }
 }
