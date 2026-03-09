@@ -1,15 +1,33 @@
 package com.studying.jobtracker.entities;
 
 import com.studying.jobtracker.utils.Stage;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.time.Instant;
 
+@Entity(name = "stage_transitions")
 public class StageTransition {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
+  @Column(name = "from")
   private Stage from;
+  @Column(name = "to")
   private Stage to;
+  @Column(name = "changed_at")
   private Instant changedAt;
+  @ManyToOne
+  @JoinColumn(name = "vacancy_id")
   private Vacancy vacancy;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
   private User user;
 
   public StageTransition(int id, Stage from, Stage to, Instant changedAt, Vacancy vacancy,

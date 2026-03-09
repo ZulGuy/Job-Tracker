@@ -1,22 +1,40 @@
 package com.studying.jobtracker.entities;
 
 import com.studying.jobtracker.utils.Stage;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.Valid;
 import java.util.List;
 
+@Entity(name = "vacancies")
 public class Vacancy {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
+  @Column(name = "name")
   private String name;
+  @Column(name = "description")
   private String description;
+  @Column(name = "requirements")
   private String requirements;
+  @Column(name = "salary")
   private String salary;
+  @Column(name = "current_stage")
   private Stage currentStage;
+  @OneToOne(mappedBy = "vacancy", cascade = CascadeType.ALL, orphanRemoval = true)
   @Valid
   private Contact contact;
+  @OneToOne(mappedBy = "vacancy", cascade = CascadeType.ALL, orphanRemoval = true)
   @Valid
   private Note note;
-
+  @OneToMany(mappedBy = "vacancy", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StageTransition> stageTransitions;
 
   public Vacancy(int id, String name, String description, String requirements, String salary, Stage currentStage,
