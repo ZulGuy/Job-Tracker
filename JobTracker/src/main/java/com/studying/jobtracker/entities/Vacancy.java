@@ -20,6 +20,8 @@ public class Vacancy {
   private int id;
   @Column(name = "name")
   private String name;
+  @Column(name = "company")
+  private String company;
   @Column(name = "description")
   private String description;
   @Column(name = "requirements")
@@ -37,7 +39,7 @@ public class Vacancy {
   @OneToMany(mappedBy = "vacancy", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StageTransition> stageTransitions;
 
-  public Vacancy(int id, String name, String description, String requirements, String salary, Stage currentStage,
+  public Vacancy(int id, String name, String company, String description, String requirements, String salary, Stage currentStage,
       Contact contact, Note note) {
     this.id = id;
     this.name = name;
@@ -49,7 +51,7 @@ public class Vacancy {
     this.note = note;
   }
 
-  public Vacancy(int id, String name, String description, String requirements, String salary,
+  public Vacancy(int id, String name, String company, String description, String requirements, String salary,
       Stage currentStage, Contact contact, Note note, List<StageTransition> stageTransitions) {
     this.id = id;
     this.name = name;
@@ -79,6 +81,14 @@ public class Vacancy {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getCompany() {
+    return company;
+  }
+
+  public void setCompany(String company) {
+    this.company = company;
   }
 
   public String getDescription() {
