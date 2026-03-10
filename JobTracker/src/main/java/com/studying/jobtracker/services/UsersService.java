@@ -1,8 +1,13 @@
 package com.studying.jobtracker.services;
 
-import org.springframework.stereotype.Service;
+import com.studying.jobtracker.entities.User;
+import java.util.Optional;
 
-@Service
-public class UsersService {
+public interface UsersService {
+
+  Optional<User> findById(int id);
+  Optional<User> findByEmail(String email);
+  Optional<User> findByName(String name);
+  Optional<User> save(UserDTO dto);
 
 }

@@ -1,5 +1,5 @@
 package com.studying.jobtracker.services;
 
-public interface StageTransitionsService {
+public class NotesServiceImpl {
 
 }
