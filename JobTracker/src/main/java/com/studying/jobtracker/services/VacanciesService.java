@@ -6,10 +6,10 @@ import java.util.Optional;
 
 public interface VacanciesService {
 
-  Optional<Vacancy> findById(int id);
-  Optional<Vacancy> findByName(String name);
+  Vacancy findById(int id);
+  Vacancy findByName(String name);
   Vacancy save(VacancyDTO dto);
   void delete(int id);
-  Optional<Vacancy> update(VacancyDTO dto);
+  Vacancy update(VacancyDTO dto);
 
 }

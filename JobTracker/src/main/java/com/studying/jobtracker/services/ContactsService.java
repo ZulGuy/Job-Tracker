@@ -1,15 +1,16 @@
 package com.studying.jobtracker.services;
 
+import com.studying.jobtracker.dto.ContactDTO;
 import com.studying.jobtracker.entities.Contact;
 import java.util.Optional;
 
 public interface ContactsService {
 
-  Optional<Contact> findById(int id);
-  Optional<Contact> findByEmail(String email);
-  Optional<Contact> findByName(String name);
-  Contact save(Contact contact);
+  Contact findById(int id);
+  Contact findByEmail(String email);
+  Contact findByName(String name);
+  Contact save(ContactDTO dto);
   void delete(int id);
-  Optional<Contact> update(Contact contact);
+  Contact update(ContactDTO dto);
 
 }

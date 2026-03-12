@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface NotesService {
 
-  Optional<Note> findById(int id);
+  Note findById(int id);
   Note save(NoteDTO dto);
   void delete(int id);
-  Optional<Note> update(NoteDTO dto);
+  Note update(NoteDTO dto);
 
 }

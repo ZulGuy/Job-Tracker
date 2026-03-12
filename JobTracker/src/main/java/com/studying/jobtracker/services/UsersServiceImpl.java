@@ -3,12 +3,13 @@ package com.studying.jobtracker.services;
 import com.studying.jobtracker.dto.UserDTO;
 import com.studying.jobtracker.entities.User;
 import com.studying.jobtracker.repositories.UsersRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsersServiceImpl implements UsersService{
+public class UsersServiceImpl implements UsersService {
 
   private final UsersRepository usersRepository;
 
@@ -18,32 +19,55 @@ public class UsersServiceImpl implements UsersService{
   }
 
   @Override
-  public Optional<User> findById(int id) {
-    return Optional.empty();
+  public User findById(int id) {
+    return usersRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
   }
 
   @Override
-  public Optional<User> findByEmail(String email) {
-    return Optional.empty();
+  public User findByEmail(String email) {
+    return usersRepository.findByEmail(email)
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
   }
 
   @Override
-  public Optional<User> findByName(String name) {
-    return Optional.empty();
+  public User findByName(String name) {
+    return usersRepository.findByName(name)
+        .orElseThrow(() -> new EntityNotFoundException("User not found"));
   }
 
   @Override
-  public Optional<User> save(UserDTO dto) {
-    return Optional.empty();
+  public User save(UserDTO dto) {
+    User user = toEntity(dto);
+    usersRepository.save(user);
+    if(usersRepository.findByEmail(dto.email()).isPresent())
+      return usersRepository.findByEmail(dto.email()).get();
+    throw new EntityNotFoundException("User is not saved");
   }
 
   @Override
   public void delete(int id) {
-
+    usersRepository.deleteById(id);
   }
 
   @Override
-  public Optional<User> update(UserDTO dto) {
-    return Optional.empty();
+  public User update(UserDTO dto) {
+    User user = toEntity(dto);
+    usersRepository.save(user);
+    if(usersRepository.findByEmail(dto.email()).isPresent())
+      return usersRepository.findByEmail(dto.email()).get();
+    throw new EntityNotFoundException("User is not updated");
+  }
+
+  private User toEntity(UserDTO dto) {
+    User user = new User();
+    user.setEmail(dto.email());
+    user.setName(dto.name());
+    user.setDescription(dto.description());
+    user.setExperience(dto.experience());
+    user.setSkills(dto.skills());
+    user.setNumber(dto.number());
+    user.setSocials(dto.socials());
+    return user;
   }
 }
