@@ -5,6 +5,7 @@ import com.studying.jobtracker.entities.Vacancy;
 import com.studying.jobtracker.repositories.VacanciesRepository;
 import com.studying.jobtracker.utils.Stage;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class VacanciesServiceImpl implements VacanciesService {
   @Autowired
   public VacanciesServiceImpl(VacanciesRepository vacanciesRepository) {
     this.vacanciesRepository = vacanciesRepository;
+  }
+
+  public List<Vacancy> getAllVacancies() {
+    return vacanciesRepository.findAll();
   }
 
   @Override
