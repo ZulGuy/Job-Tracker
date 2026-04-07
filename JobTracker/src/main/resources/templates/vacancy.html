@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vacancy Detail — Job Tracker</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💼</div>
+    Job Tracker
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Menu</div>
+    <a class="sidebar-link active" href="/vacancies">
+      <span class="icon">📋</span> Vacancies
+    </a>
+    <a class="sidebar-link" href="/contacts">
+      <span class="icon">👤</span> Contacts
+    </a>
+    <a class="sidebar-link" href="/notes">
+      <span class="icon">📝</span> Notes
+    </a>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Stages</div>
+    <a class="sidebar-link" href="#"><span class="stat-dot" style="background:#94a3b8"></span> New</a>
+    <a class="sidebar-link" href="#"><span class="stat-dot" style="background:#60a5fa"></span> Responded</a>
+    <a class="sidebar-link" href="#"><span class="stat-dot" style="background:#a78bfa"></span> HR Interview</a>
+    <a class="sidebar-link" href="#"><span class="stat-dot" style="background:#fb923c"></span> Test Task</a>
+    <a class="sidebar-link" href="#"><span class="stat-dot" style="background:#34d399"></span> Tech Interview</a>
+    <a class="sidebar-link" href="#"><span class="stat-dot" style="background:#4ade80"></span> Offered</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-divider"></div>
+    <div class="user-pill">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <div class="user-name">Alex Frost</div>
+        <div class="user-role">Job Seeker</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/vacancies" class="btn btn-ghost" style="padding:6px 10px;">← Back</a>
+      <div class="topbar-title">Vacancy Detail</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost">Edit</button>
+      <button class="btn btn-primary" style="background:#ef4444">Delete</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="detail-layout">
+
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- HEADER CARD -->
+        <div class="card-block">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:6px;"
+                   th:text="${vacancy?.company ?: 'Grid Dynamics'}">Grid Dynamics</div>
+              <h1 style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:12px;"
+                  th:text="${vacancy?.name ?: 'Senior Java Engineer'}">Senior Java Engineer</h1>
+              <span class="stage-badge s-tech" th:text="${vacancy?.currentStage?.name() ?: 'TECH_INTERVIEW'}">TECH INTERVIEW</span>
+            </div>
+            <div style="font-size:24px;font-weight:800;color:var(--accent);white-space:nowrap;"
+                 th:text="${vacancy?.salary ?: '$7k – $10k'}">$7k – $10k</div>
+          </div>
+
+          <!-- STAGE PIPELINE -->
+          <div style="margin-top:20px;">
+            <div class="block-title">Pipeline</div>
+            <div class="stage-pipeline">
+              <div class="pipe-step">
+                <div class="pipe-dot s-new done" title="New">N</div>
+              </div>
+              <div class="pipe-line done"></div>
+              <div class="pipe-step">
+                <div class="pipe-dot s-responded done" title="Responded">R</div>
+              </div>
+              <div class="pipe-line done"></div>
+              <div class="pipe-step">
+                <div class="pipe-dot s-hr done" title="HR Interview">HR</div>
+              </div>
+              <div class="pipe-line done"></div>
+              <div class="pipe-step">
+                <div class="pipe-dot s-tech active" title="Tech Interview">TI</div>
+              </div>
+              <div class="pipe-line"></div>
+              <div class="pipe-step">
+                <div class="pipe-dot s-offered future" title="Offered">✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="card-block">
+          <div class="block-title">Description</div>
+          <p style="font-size:14px;line-height:1.7;color:var(--text-secondary);"
+             th:text="${vacancy?.description}">
+            We are looking for a Senior Java Engineer to join our distributed backend team.
+            You will be responsible for designing and developing microservices using Spring Boot,
+            working closely with product teams to deliver high-quality solutions at scale.
+          </p>
+        </div>
+
+        <!-- REQUIREMENTS -->
+        <div class="card-block">
+          <div class="block-title">Requirements</div>
+          <p style="font-size:14px;line-height:1.7;color:var(--text-secondary);"
+             th:text="${vacancy?.requirements}">
+            5+ years of Java experience · Spring Boot / Spring Cloud · Microservices architecture ·
+            REST API design · PostgreSQL · Docker / Kubernetes · Good communication skills in English.
+          </p>
+        </div>
+
+        <!-- STAGE TRANSITIONS / TIMELINE -->
+        <div class="card-block">
+          <div class="block-title">Stage History</div>
+          <div class="timeline-item">
+            <div class="tl-dot s-new"></div>
+            <div class="tl-body">
+              <div class="tl-text">Added as <strong>New</strong></div>
+              <div class="tl-time">Mar 28, 2026 · 10:14</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot s-responded"></div>
+            <div class="tl-body">
+              <div class="tl-text">Moved to <strong>Responded</strong></div>
+              <div class="tl-time">Mar 29, 2026 · 09:00</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot s-hr"></div>
+            <div class="tl-body">
+              <div class="tl-text">Moved to <strong>HR Interview</strong></div>
+              <div class="tl-time">Apr 1, 2026 · 15:30</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot s-tech"></div>
+            <div class="tl-body">
+              <div class="tl-text">Moved to <strong>Tech Interview</strong></div>
+              <div class="tl-time">Apr 3, 2026 · 11:00</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+
+        <!-- INFO -->
+        <div class="card-block">
+          <div class="block-title">Info</div>
+          <div class="info-row">
+            <span class="info-key">Company</span>
+            <span class="info-value" th:text="${vacancy?.company ?: 'Grid Dynamics'}">Grid Dynamics</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Salary</span>
+            <span class="info-value" th:text="${vacancy?.salary ?: '$7k – $10k'}">$7k – $10k</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Stage</span>
+            <span class="info-value">Tech Interview</span>
+          </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="card-block">
+          <div class="block-title">Contact</div>
+          <div class="info-row">
+            <span class="info-key">Name</span>
+            <span class="info-value" th:text="${vacancy?.contact?.name ?: 'Sarah Johnson'}">Sarah Johnson</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Email</span>
+            <span class="info-value" th:text="${vacancy?.contact?.email ?: 'sarah@griddynamics.com'}">sarah@griddynamics.com</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Phone</span>
+            <span class="info-value" th:text="${vacancy?.contact?.number ?: '+1 555 000 00 00'}">+1 555 000 00 00</span>
+          </div>
+        </div>
+
+        <!-- NOTE -->
+        <div class="card-block">
+          <div class="block-title">Notes</div>
+          <textarea class="note-area"
+                    placeholder="Write your notes about this vacancy…"
+                    th:text="${vacancy?.note?.content}">Tech interview scheduled for April 7th at 14:00 UTC. Prepare system design questions and review Spring internals.</textarea>
+          <button class="btn btn-primary" style="margin-top:12px;width:100%;justify-content:center;">Save Note</button>
+        </div>
+
+        <!-- MOVE STAGE -->
+        <div class="card-block">
+          <div class="block-title">Move Stage</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-ghost" style="justify-content:center;">→ Test Task</button>
+            <button class="btn btn-ghost" style="justify-content:center;border-color:#4ade80;color:#16a34a;">→ Mark as Offered</button>
+            <button class="btn btn-ghost" style="justify-content:center;border-color:#f87171;color:#dc2626;">✕ Reject</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /content -->
+</div><!-- /main -->
+
+</body>
+</html>

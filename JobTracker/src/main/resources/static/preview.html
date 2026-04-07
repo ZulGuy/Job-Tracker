@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Tracker — Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f4f5f7; --surface: #ffffff; --sidebar-bg: #0f172a;
+      --sidebar-hover: #1e293b; --sidebar-active: #6366f1;
+      --text-primary: #111827; --text-secondary: #6b7280; --text-muted: #9ca3af;
+      --border: #e5e7eb; --accent: #6366f1; --accent-hover: #4f46e5;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+      --shadow-card: 0 2px 8px rgba(0,0,0,.10);
+    }
+    body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; }
+    /* SIDEBAR */
+    .sidebar { width: 240px; min-width: 240px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 24px 0; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 28px; color: #fff; font-size: 17px; font-weight: 700; }
+    .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .sidebar-section { padding: 0 12px; margin-bottom: 8px; }
+    .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #475569; padding: 0 8px 8px; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: #94a3b8; font-size: 14px; font-weight: 500; text-decoration: none; transition: background .15s, color .15s; cursor: pointer; }
+    .sidebar-link:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+    .sidebar-link.active { background: var(--sidebar-active); color: #fff; }
+    .icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-divider { height: 1px; background: #1e293b; margin: 12px 20px; }
+    .sidebar-footer { margin-top: auto; padding: 0 12px; }
+    .user-pill { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background .15s; }
+    .user-pill:hover { background: var(--sidebar-hover); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; }
+    .user-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+    .user-role { font-size: 11px; color: #64748b; }
+    .stat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .topbar-title { font-size: 18px; font-weight: 700; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: background .15s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+    .view-toggle { display: flex; background: var(--bg); border-radius: 8px; padding: 3px; }
+    .view-btn { padding: 5px 10px; border-radius: 6px; border: none; background: transparent; font-size: 13px; cursor: pointer; color: var(--text-secondary); font-weight: 500; }
+    .view-btn.active { background: var(--surface); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    .content { flex: 1; overflow: auto; padding: 24px 28px; }
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); }
+    .stat-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .stat-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+    .stat-sub { font-size: 12px; color: var(--text-secondary); }
+    /* BOARD */
+    .board { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 12px; }
+    .board::-webkit-scrollbar { height: 6px; }
+    .board::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    .column { flex: 0 0 210px; display: flex; flex-direction: column; gap: 10px; }
+    .column-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 4px; }
+    .column-title { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-secondary); }
+    .stage-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .column-count { font-size: 11px; font-weight: 600; background: var(--bg); color: var(--text-muted); border-radius: 99px; padding: 1px 7px; }
+    .vacancy-card { background: var(--surface); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow-card); cursor: pointer; transition: transform .15s, box-shadow .15s; border: 1px solid transparent; }
+    .vacancy-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); border-color: var(--accent); }
+    .card-company { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+    .card-title { font-size: 14px; font-weight: 600; color: var(--text-primary); line-height: 1.35; margin-bottom: 10px; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
+    .card-salary { font-weight: 600; color: var(--text-secondary); }
+    .card-footer { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+    .tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: #f3f4f6; color: var(--text-secondary); }
+    .card-add { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: var(--radius); border: 1.5px dashed var(--border); font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: background .15s, color .15s, border-color .15s; background: transparent; width: 100%; }
+    .card-add:hover { background: var(--surface); color: var(--accent); border-color: var(--accent); }
+    /* Page tabs */
+    .page-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+    .page-tab { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--text-secondary); transition: background .15s, color .15s; }
+    .page-tab.active { background: var(--accent); color: #fff; }
+    .page-tab:hover:not(.active) { background: var(--border); }
+    /* PAGE SECTIONS */
+    .page { display: none; }
+    .page.active { display: block; }
+    /* DETAIL */
+    .detail-layout { display: grid; grid-template-columns: 1fr 300px; gap: 24px; }
+    .card-block { background: var(--surface); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); margin-bottom: 16px; }
+    .block-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 14px; }
+    .stage-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 99px; color: #fff; text-transform: uppercase; letter-spacing: .05em; }
+    .stage-pipeline { display: flex; align-items: center; gap: 0; margin-top: 8px; }
+    .pipe-step { display: flex; align-items: center; }
+    .pipe-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .pipe-dot.active { box-shadow: 0 0 0 3px rgba(99,102,241,.3); }
+    .pipe-dot.future { opacity: .3; }
+    .pipe-line { width: 16px; height: 2px; background: var(--border); }
+    .pipe-line.done { background: var(--accent); }
+    .timeline-item { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .timeline-item:last-child { border-bottom: none; }
+    .tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+    .tl-text { font-size: 13px; font-weight: 500; }
+    .tl-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--text-muted); font-weight: 500; }
+    .info-value { color: var(--text-primary); font-weight: 600; }
+    .note-area { width: 100%; min-height: 90px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; color: var(--text-primary); resize: vertical; background: var(--bg); }
+    .note-area:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+    /* COLORS */
+    .s-new      { background: #94a3b8; }
+    .s-responded{ background: #60a5fa; }
+    .s-hr       { background: #a78bfa; }
+    .s-test     { background: #fb923c; }
+    .s-tech     { background: #34d399; }
+    .s-other    { background: #f472b6; }
+    .s-offered  { background: #4ade80; }
+    .content::-webkit-scrollbar { width: 6px; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💼</div>
+    Job Tracker
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Menu</div>
+    <a class="sidebar-link active" onclick="showPage('board')"><span class="icon">📋</span> Vacancies</a>
+    <a class="sidebar-link" onclick="showPage('detail')"><span class="icon">🔍</span> Vacancy Detail</a>
+    <a class="sidebar-link"><span class="icon">👤</span> Contacts</a>
+    <a class="sidebar-link"><span class="icon">📝</span> Notes</a>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Filter by stage</div>
+    <a class="sidebar-link"><span class="stat-dot" style="background:#94a3b8"></span> New</a>
+    <a class="sidebar-link"><span class="stat-dot" style="background:#60a5fa"></span> Responded</a>
+    <a class="sidebar-link"><span class="stat-dot" style="background:#a78bfa"></span> HR Interview</a>
+    <a class="sidebar-link"><span class="stat-dot" style="background:#fb923c"></span> Test Task</a>
+    <a class="sidebar-link"><span class="stat-dot" style="background:#34d399"></span> Tech Interview</a>
+    <a class="sidebar-link"><span class="stat-dot" style="background:#4ade80"></span> Offered</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-divider"></div>
+    <div class="user-pill">
+      <div class="user-avatar">A</div>
+      <div>
+        <div class="user-name">Alex Frost</div>
+        <div class="user-role">Job Seeker</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div id="topbar-title" class="topbar-title">Vacancies — Board</div>
+    <div class="topbar-actions">
+      <div class="view-toggle">
+        <button class="view-btn active">Board</button>
+        <button class="view-btn">List</button>
+      </div>
+      <button class="btn btn-ghost">Filter</button>
+      <button class="btn btn-primary">＋ Add Vacancy</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE: BOARD -->
+    <div class="page active" id="page-board">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Applied</div>
+          <div class="stat-value">12</div>
+          <div class="stat-sub">All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">In Progress</div>
+          <div class="stat-value">5</div>
+          <div class="stat-sub"><span class="stat-dot" style="background:#60a5fa"></span>Active pipelines</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Interviews</div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub"><span class="stat-dot" style="background:#a78bfa"></span>Scheduled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Offers</div>
+          <div class="stat-value">1</div>
+          <div class="stat-sub"><span class="stat-dot" style="background:#4ade80"></span>Received</div>
+        </div>
+      </div>
+
+      <div class="board">
+        <!-- NEW -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-new"></span>New</div>
+            <span class="column-count">3</span>
+          </div>
+          <div class="vacancy-card" onclick="showPage('detail')">
+            <div class="card-company">Google</div>
+            <div class="card-title">Backend Java Developer</div>
+            <div class="card-meta"><span class="card-salary">$5k – $8k</span><span>3 days ago</span></div>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">Netflix</div>
+            <div class="card-title">Senior Software Engineer</div>
+            <div class="card-meta"><span class="card-salary">$9k – $12k</span><span>1 week ago</span></div>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">Spotify</div>
+            <div class="card-title">Java Spring Boot Engineer</div>
+            <div class="card-meta"><span class="card-salary">Remote</span><span>Today</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+        <!-- RESPONDED -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-responded"></span>Responded</div>
+            <span class="column-count">2</span>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">JetBrains</div>
+            <div class="card-title">Software Developer</div>
+            <div class="card-meta"><span class="card-salary">$4k – $6k</span><span>5 days ago</span></div>
+            <div class="card-footer"><span class="tag">Java</span><span class="tag">Kotlin</span></div>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">Epam</div>
+            <div class="card-title">Java Middle Developer</div>
+            <div class="card-meta"><span class="card-salary">$3k – $5k</span><span>2 days ago</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+        <!-- HR -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-hr"></span>HR Interview</div>
+            <span class="column-count">2</span>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">Wargaming</div>
+            <div class="card-title">Backend Engineer</div>
+            <div class="card-meta"><span class="card-salary">$4.5k</span><span>Apr 5</span></div>
+            <div class="card-footer"><span class="tag">Spring</span></div>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">EPAM Systems</div>
+            <div class="card-title">Java Developer (L2)</div>
+            <div class="card-meta"><span class="card-salary">$3.5k</span><span>Apr 6</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+        <!-- TEST TASK -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-test"></span>Test Task</div>
+            <span class="column-count">1</span>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">Luxoft</div>
+            <div class="card-title">Java Backend Developer</div>
+            <div class="card-meta"><span class="card-salary">$5k – $7k</span><span>Due Apr 8</span></div>
+            <div class="card-footer"><span class="tag">REST</span><span class="tag">PostgreSQL</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+        <!-- TECH -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-tech"></span>Tech Interview</div>
+            <span class="column-count">2</span>
+          </div>
+          <div class="vacancy-card" onclick="showPage('detail')">
+            <div class="card-company">Grid Dynamics</div>
+            <div class="card-title">Senior Java Engineer</div>
+            <div class="card-meta"><span class="card-salary">$7k – $10k</span><span>Apr 7</span></div>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">EPAM</div>
+            <div class="card-title">Spring Boot Developer</div>
+            <div class="card-meta"><span class="card-salary">$6k</span><span>Apr 9</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+        <!-- OTHER -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-other"></span>Other</div>
+            <span class="column-count">1</span>
+          </div>
+          <div class="vacancy-card">
+            <div class="card-company">DataArt</div>
+            <div class="card-title">Java Developer</div>
+            <div class="card-meta"><span class="card-salary">Negotiable</span><span>Apr 3</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+        <!-- OFFERED -->
+        <div class="column">
+          <div class="column-header">
+            <div class="column-title"><span class="stage-dot s-offered"></span>Offered</div>
+            <span class="column-count">1</span>
+          </div>
+          <div class="vacancy-card" style="border-left:3px solid #4ade80">
+            <div class="card-company">SoftServe</div>
+            <div class="card-title">Middle Java Developer</div>
+            <div class="card-meta"><span class="card-salary" style="color:#16a34a">$5k / month</span><span>Apr 1</span></div>
+            <div class="card-footer"><span class="tag" style="background:#dcfce7;color:#16a34a">✓ Offer received</span></div>
+          </div>
+          <button class="card-add">＋ Add card</button>
+        </div>
+      </div>
+    </div><!-- /page-board -->
+
+    <!-- PAGE: DETAIL -->
+    <div class="page" id="page-detail">
+      <div style="margin-bottom:16px;">
+        <a onclick="showPage('board')" class="btn btn-ghost" style="cursor:pointer;">← Back to Board</a>
+      </div>
+      <div class="detail-layout">
+        <div>
+          <div class="card-block">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+              <div>
+                <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:6px;">Grid Dynamics</div>
+                <h1 style="font-size:22px;font-weight:700;margin-bottom:12px;">Senior Java Engineer</h1>
+                <span class="stage-badge s-tech">Tech Interview</span>
+              </div>
+              <div style="font-size:24px;font-weight:800;color:var(--accent);white-space:nowrap;">$7k – $10k</div>
+            </div>
+            <div style="margin-top:20px;">
+              <div class="block-title">Pipeline</div>
+              <div class="stage-pipeline">
+                <div class="pipe-step"><div class="pipe-dot s-new done" title="New">N</div></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-dot s-responded done" title="Responded">R</div></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-dot s-hr done" title="HR Interview">HR</div></div>
+                <div class="pipe-line done"></div>
+                <div class="pipe-step"><div class="pipe-dot s-tech active" title="Tech Interview" style="box-shadow:0 0 0 3px rgba(52,211,153,.3)">TI</div></div>
+                <div class="pipe-line"></div>
+                <div class="pipe-step"><div class="pipe-dot s-offered future" title="Offered">✓</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-block">
+            <div class="block-title">Description</div>
+            <p style="font-size:14px;line-height:1.7;color:var(--text-secondary);">We are looking for a Senior Java Engineer to join our distributed backend team. You will be responsible for designing and developing microservices using Spring Boot, working closely with product teams to deliver high-quality solutions at scale.</p>
+          </div>
+          <div class="card-block">
+            <div class="block-title">Requirements</div>
+            <p style="font-size:14px;line-height:1.7;color:var(--text-secondary);">5+ years of Java experience · Spring Boot / Spring Cloud · Microservices architecture · REST API design · PostgreSQL · Docker / Kubernetes · Good communication skills in English.</p>
+          </div>
+          <div class="card-block">
+            <div class="block-title">Stage History</div>
+            <div class="timeline-item">
+              <div class="tl-dot s-new"></div>
+              <div><div class="tl-text">Added as <strong>New</strong></div><div class="tl-time">Mar 28, 2026 · 10:14</div></div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot s-responded"></div>
+              <div><div class="tl-text">Moved to <strong>Responded</strong></div><div class="tl-time">Mar 29, 2026 · 09:00</div></div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot s-hr"></div>
+              <div><div class="tl-text">Moved to <strong>HR Interview</strong></div><div class="tl-time">Apr 1, 2026 · 15:30</div></div>
+            </div>
+            <div class="timeline-item">
+              <div class="tl-dot s-tech"></div>
+              <div><div class="tl-text">Moved to <strong>Tech Interview</strong></div><div class="tl-time">Apr 3, 2026 · 11:00</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-block">
+            <div class="block-title">Info</div>
+            <div class="info-row"><span class="info-key">Company</span><span class="info-value">Grid Dynamics</span></div>
+            <div class="info-row"><span class="info-key">Salary</span><span class="info-value">$7k – $10k</span></div>
+            <div class="info-row"><span class="info-key">Stage</span><span class="info-value">Tech Interview</span></div>
+          </div>
+          <div class="card-block">
+            <div class="block-title">Contact</div>
+            <div class="info-row"><span class="info-key">Name</span><span class="info-value">Sarah Johnson</span></div>
+            <div class="info-row"><span class="info-key">Email</span><span class="info-value">sarah@grid.com</span></div>
+            <div class="info-row"><span class="info-key">Phone</span><span class="info-value">+1 555 000 00 00</span></div>
+          </div>
+          <div class="card-block">
+            <div class="block-title">Notes</div>
+            <textarea class="note-area">Tech interview scheduled for April 7th at 14:00 UTC. Prepare system design questions and review Spring internals.</textarea>
+            <button class="btn btn-primary" style="margin-top:12px;width:100%;justify-content:center;">Save Note</button>
+          </div>
+          <div class="card-block">
+            <div class="block-title">Move Stage</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-ghost" style="justify-content:center;">→ Test Task</button>
+              <button class="btn btn-ghost" style="justify-content:center;border-color:#4ade80;color:#16a34a;">→ Mark as Offered</button>
+              <button class="btn btn-ghost" style="justify-content:center;border-color:#f87171;color:#dc2626;">✕ Reject</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /page-detail -->
+
+  </div>
+</div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    const titles = { board: 'Vacancies — Board', detail: 'Grid Dynamics · Senior Java Engineer' };
+    document.getElementById('topbar-title').textContent = titles[name] || '';
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  }
+</script>
+</body>
+</html>

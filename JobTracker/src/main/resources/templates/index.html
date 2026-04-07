@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Tracker</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💼</div>
+    Job Tracker
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Menu</div>
+    <a class="sidebar-link active" href="/vacancies">
+      <span class="icon">📋</span> Vacancies
+    </a>
+    <a class="sidebar-link" href="/contacts">
+      <span class="icon">👤</span> Contacts
+    </a>
+    <a class="sidebar-link" href="/notes">
+      <span class="icon">📝</span> Notes
+    </a>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Stages</div>
+    <a class="sidebar-link" href="#">
+      <span class="stat-dot" style="background:#94a3b8"></span> New
+    </a>
+    <a class="sidebar-link" href="#">
+      <span class="stat-dot" style="background:#60a5fa"></span> Responded
+    </a>
+    <a class="sidebar-link" href="#">
+      <span class="stat-dot" style="background:#a78bfa"></span> HR Interview
+    </a>
+    <a class="sidebar-link" href="#">
+      <span class="stat-dot" style="background:#fb923c"></span> Test Task
+    </a>
+    <a class="sidebar-link" href="#">
+      <span class="stat-dot" style="background:#34d399"></span> Tech Interview
+    </a>
+    <a class="sidebar-link" href="#">
+      <span class="stat-dot" style="background:#4ade80"></span> Offered
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-divider"></div>
+    <div class="user-pill">
+      <div class="user-avatar" th:text="${#strings.substring(user?.name ?: 'U', 0, 1)}">A</div>
+      <div class="user-info">
+        <div class="user-name" th:text="${user?.name ?: 'Alex Frost'}">Alex Frost</div>
+        <div class="user-role">Job Seeker</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">Vacancies</div>
+    <div class="topbar-actions">
+      <div class="view-toggle">
+        <button class="view-btn active">Board</button>
+        <button class="view-btn">List</button>
+      </div>
+      <button class="btn btn-ghost">Filter</button>
+      <button class="btn btn-primary">＋ Add Vacancy</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Applied</div>
+        <div class="stat-value" th:text="${totalCount ?: 12}">12</div>
+        <div class="stat-sub">All time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">In Progress</div>
+        <div class="stat-value" th:text="${activeCount ?: 5}">5</div>
+        <div class="stat-sub"><span class="stat-dot" style="background:#60a5fa"></span>Active pipelines</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Interviews</div>
+        <div class="stat-value" th:text="${interviewCount ?: 3}">3</div>
+        <div class="stat-sub"><span class="stat-dot" style="background:#a78bfa"></span>Scheduled</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Offers</div>
+        <div class="stat-value" th:text="${offerCount ?: 1}">1</div>
+        <div class="stat-sub"><span class="stat-dot" style="background:#4ade80"></span>Received</div>
+      </div>
+    </div>
+
+    <!-- KANBAN BOARD -->
+    <div class="board">
+
+      <!-- NEW -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-new"></span>New</div>
+          <span class="column-count">3</span>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Google</div>
+          <div class="card-title">Backend Java Developer</div>
+          <div class="card-meta">
+            <span class="card-salary">$5k – $8k</span>
+            <span>3 days ago</span>
+          </div>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Netflix</div>
+          <div class="card-title">Senior Software Engineer</div>
+          <div class="card-meta">
+            <span class="card-salary">$9k – $12k</span>
+            <span>1 week ago</span>
+          </div>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Spotify</div>
+          <div class="card-title">Java Spring Boot Engineer</div>
+          <div class="card-meta">
+            <span class="card-salary">Remote</span>
+            <span>Today</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+      <!-- RESPONDED -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-responded"></span>Responded</div>
+          <span class="column-count">2</span>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">JetBrains</div>
+          <div class="card-title">Software Developer</div>
+          <div class="card-meta">
+            <span class="card-salary">$4k – $6k</span>
+            <span>5 days ago</span>
+          </div>
+          <div class="card-footer">
+            <span class="tag">Java</span>
+            <span class="tag">Kotlin</span>
+          </div>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Epam</div>
+          <div class="card-title">Java Middle Developer</div>
+          <div class="card-meta">
+            <span class="card-salary">$3k – $5k</span>
+            <span>2 days ago</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+      <!-- HR INTERVIEW -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-hr"></span>HR Interview</div>
+          <span class="column-count">2</span>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Wargaming</div>
+          <div class="card-title">Backend Engineer</div>
+          <div class="card-meta">
+            <span class="card-salary">$4.5k</span>
+            <span>Apr 5</span>
+          </div>
+          <div class="card-footer">
+            <span class="tag">Spring</span>
+          </div>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">EPAM Systems</div>
+          <div class="card-title">Java Developer (L2)</div>
+          <div class="card-meta">
+            <span class="card-salary">$3.5k</span>
+            <span>Apr 6</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+      <!-- TEST TASK -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-test"></span>Test Task</div>
+          <span class="column-count">1</span>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Luxoft</div>
+          <div class="card-title">Java Backend Developer</div>
+          <div class="card-meta">
+            <span class="card-salary">$5k – $7k</span>
+            <span>Due Apr 8</span>
+          </div>
+          <div class="card-footer">
+            <span class="tag">REST</span>
+            <span class="tag">PostgreSQL</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+      <!-- TECH INTERVIEW -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-tech"></span>Tech Interview</div>
+          <span class="column-count">2</span>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">Grid Dynamics</div>
+          <div class="card-title">Senior Java Engineer</div>
+          <div class="card-meta">
+            <span class="card-salary">$7k – $10k</span>
+            <span>Apr 7</span>
+          </div>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">EPAM</div>
+          <div class="card-title">Spring Boot Developer</div>
+          <div class="card-meta">
+            <span class="card-salary">$6k</span>
+            <span>Apr 9</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+      <!-- OTHER INTERVIEW -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-other"></span>Other</div>
+          <span class="column-count">1</span>
+        </div>
+        <div class="vacancy-card">
+          <div class="card-company">DataArt</div>
+          <div class="card-title">Java Developer</div>
+          <div class="card-meta">
+            <span class="card-salary">Negotiable</span>
+            <span>Apr 3</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+      <!-- OFFERED -->
+      <div class="column">
+        <div class="column-header">
+          <div class="column-title"><span class="stage-dot s-offered"></span>Offered</div>
+          <span class="column-count">1</span>
+        </div>
+        <div class="vacancy-card" style="border-left: 3px solid #4ade80;">
+          <div class="card-company">SoftServe</div>
+          <div class="card-title">Middle Java Developer</div>
+          <div class="card-meta">
+            <span class="card-salary" style="color:#16a34a">$5k / month</span>
+            <span>Apr 1</span>
+          </div>
+          <div class="card-footer">
+            <span class="tag" style="background:#dcfce7;color:#16a34a;">✓ Offer received</span>
+          </div>
+        </div>
+        <button class="card-add">＋ Add card</button>
+      </div>
+
+    </div><!-- /board -->
+  </div><!-- /content -->
+</div><!-- /main -->
+
+</body>
+</html>
